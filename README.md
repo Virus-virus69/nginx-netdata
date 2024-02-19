@@ -19,7 +19,7 @@ Nginx - это веб-сервер, который используется дл
 2. Настройка Nginx:
 * Создайте файл конфигурации Nginx в ```/etc/nginx/sites-available/netdata01.conf```.
 * Добавьте необходимые параметры проксирования и защиты в файл конфигурации.
-* Создайте символьную ссылку на файл конфигурации в /etc/nginx/sites-enabled/.
+* Создайте символьную ссылку на файл конфигурации в ```/etc/nginx/sites-enabled/```.
 * Перезапустите Nginx для применения изменений.
 ## Настройка аутентификации при помощи Nginx
 Для защиты веб-приложений можно использовать аутентификацию при помощи Nginx.
@@ -43,24 +43,29 @@ Nginx - это веб-сервер, который используется дл
 
 ## Результаты
 В данном разделе будут проанализированы промежуточные результаты, которые были получены в процессе выполнения задания.
-1. Установить Netdata поможет простейшая ссылка, которую необходимо вставить в терминал: ```wget -O /tmp/netdata-kickstart.sh https://get.netdata.cloud/kickstart.sh && sh /tmp/netdata-kickstart.sh --stable-channel --disable-telemetry```  
-В результате чего получаем рабочую службу ```netdata.service```:
+1. Для установки Netdata необходимо выполнить следующую команду в терминале: ```wget -O /tmp/netdata-kickstart.sh https://get.netdata.cloud/kickstart.sh && sh /tmp/netdata-kickstart.sh --stable-channel --disable-telemetry```  
+В результате будет установлена служба ```netdata.service``` и получен рабочий экземпляр:
 ![image](https://github.com/Virus-virus69/nginx-netdata/assets/145215499/5ecbbe21-f40a-472a-8884-19f35ba86a2b)
-2. Установить Nginx при помощи менеджера пакетов: ```sudo apt install nginx```
-В результате чего получаем рабочую службу ```nginx.service```:
+2. Для установки Nginx необходимо выполнить команду: ```sudo apt install nginx```
+В результате будет установлена служба ```nginx.service```:  
 ![image](https://github.com/Virus-virus69/nginx-netdata/assets/145215499/00daf21e-22cb-42e4-89eb-82ecfb89e305)
-3. Для того, чтобы использовать базовую аутентификацию Nginx будем использовать файл аутентификации ```passwords```, который зададим при помощи команды:
-```printf "yourusername:$(openssl passwd -apr1)" > /etc/nginx/passwords```
-Также по пути ```/etc/nginx/sites-available/netdata01.conf``` необходимо добавить следующие две строчки в блок ```server```:
+3. Для использования базовой аутентификации Nginx необходимо создать файл аутентификации ```passwords``` с помощью команды:
+```printf "yourusername:$(openssl passwd -apr1)" > /etc/nginx/passwords```  
+Также в файле ```/etc/nginx/sites-available/netdata01.conf``` необходимо добавить следующие строки в блок ```server``` для аутентификации:
 ```
 auth_basic "Protected"; 
 auth_basic_user_file passwords;
 ```
-4. Брандмауэр
+4. Для конфигурации межсетевого экрана Netfilter необходимо выполнить команду:
+```sudo ufw allow "Nginx HTTP"```  
+В результате будет получен доступ к службе:  
+![image](https://github.com/Virus-virus69/nginx-netdata/assets/145215499/33ed2c49-c308-4c82-ad90-467a3743f18a)
+5. В связи с отсутствием общедоступного домена, можно использовать файл ```/etc/hosts``` для указания перехода по ссылке на localhost: ```127.0.0.1 netdata01```
 
-В результате проделанной работы мы будем переходить по ссылке: ```http://netdata01``` и получать следующую картину: 
+
+После выполнения всех шагов, перейдя по ссылке ```http://netdata01``` можно увидеть следующую картину: 
 ![image](https://github.com/Virus-virus69/nginx-netdata/assets/145215499/ed44d3ed-fc0a-437e-88c6-75c9a9750676)  
-При успешном вводе аутентификационных данных попадем в окно мониторинга:
+При успешном вводе аутентификационных данных будет открыт доступ к окну мониторинга:
 ![image](https://github.com/Virus-virus69/nginx-netdata/assets/145215499/c103fa34-3765-41b6-b9e4-09e65e842390)
 
 
